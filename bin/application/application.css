@@ -1,0 +1,24 @@
+.graph-area {
+	-fx-background-color: DarkSlateGrey;
+}
+
+
+.axis {
+	-fx-tick-label-fill: AntiqueWhite;
+}
+
+.graph {
+	-fx-stroke: DarkSalmon;
+}
+
+.button {
+	-fx-background-color: transparent;
+}
+
+.text-field {
+	-fx-opacity: 0.75;
+}
+
+.button-box {
+	-fx-padding: 10 0 0 10;
+}
