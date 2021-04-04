@@ -1,11 +1,11 @@
 package application;
 
 import javafx.application.Application;
-import javafx.event.EventHandler;
+//import javafx.event.EventHandler;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.input.ScrollEvent;
+//import javafx.scene.input.MouseEvent;
+//import javafx.scene.input.ScrollEvent;
 
 /**
  * This program displays a graph area and an input box for users to enter a function
@@ -13,11 +13,11 @@ import javafx.scene.input.ScrollEvent;
  * the parser fully functional as well as fix zooming and panning so I can add them back
  * in.
  * @author Mark Kikta
- * @version 0.4
+ * @version 0.5
  */
 public class Runner extends Application {
 	
-	private double xPanStart, yPanStart;	// These are used to keep track of where a pan starts.
+	//private double xPanStart, yPanStart;	// These are used to keep track of where a pan starts.
 	
 	@Override
 	/**

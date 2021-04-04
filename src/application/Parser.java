@@ -8,23 +8,23 @@ import java.util.function.Function;
 
 /**
  * This class has a method to parse a string representation of a mathematical expression
- * using Dijkstra's Shunting-Yard Algorithm. It then returns it as a function.
+ * using Dijkstra's Shunting-Yard Algorithm. It has a helper method that converts this post-fix
+ * expression into a function.
  * @author Mark Kikta
- * @version 0.1
+ * @version 0.2
  */
 public class Parser {
 	
 	/**
 	 * Tokenizes the input string and puts it into Reverse Polish Notation using 
 	 * Dijkstra's Shunting-Yard Algorithm. After that, it turns it into a function
-	 * using an evaluation of the postfix.
-	 * Currently can only handle only one x in the whole expression.
-	 * It is also limited by the amount of tokens that are currently recognized.
+	 * using an evaluation of the post-fix.
 	 * @param input The String to be parsed.
 	 * @return The resulting function.
 	 */
 	public static Function<Double, Double> parse (String input) {
 		
+		// If the string is empty, return null.
 		if (input.equals("")) {
 			return null;
 		}
@@ -48,12 +48,12 @@ public class Parser {
 			token = new Token(st.nextToken());
 			
 			// If the token is a number (or an x) add push it to the output queue.
-			if (token.isNumeric()) {
+			if (token.getType() == TokenType.CONSTANT || token.getType() == TokenType.VARIABLE) {
 				queue.add(token);
 			} 
 			
 			// If the token is a a function, push it to the operator stack.
-			else if (token.isFunction()) {
+			else if (token.getType() == TokenType.FUNCTION) {
 				stack.push(token);
 			} 
 			
@@ -62,11 +62,11 @@ public class Parser {
 			 *  or if it has equal precedence and is left-associative, and it is not a left parentheses, pop the top of the 
 			 *  operator stack to the output queue. After this, push the token to the operator stack.
 			 */
-			else if (token.isOperator()) {
-				while(stack.peek().isOperator() 
+			else if (token.getType() == TokenType.OPERATOR) {
+				while(stack.peek().getType() == TokenType.OPERATOR 
 						&& (stack.peek().getPrecedence() > token.getPrecedence() 
 							|| (stack.peek().getPrecedence() == token.getPrecedence()
-								&& stack.peek().getAssociativity() == 0))
+								&& stack.peek().getAssociativity()))
 						&& !stack.peek().getSymbol().equals("(")) {
 					queue.add(stack.pop());
 				}
@@ -90,7 +90,7 @@ public class Parser {
 				if (stack.peek().getSymbol().equals("(")) {
 					stack.pop();
 				}
-				if (stack.peek().isFunction()) {
+				if (stack.peek().getType() == TokenType.FUNCTION) {
 					queue.add(stack.pop());
 				}
 			}
@@ -101,113 +101,52 @@ public class Parser {
 		
 		// Pop the rest of the operator stack to the output queue.
 		while (!stack.empty()) {
-				queue.add(stack.pop());
+			queue.add(stack.pop());
 		}
 		
-		// Check if the algorithm worked correctly.
-		/* for (Token t : queue) {
-			System.out.print(t.getSymbol() + " ");
-		}*/
+		// Return the evaluation of this post-fix.
+		return evaluatePostfix(queue);
+	}
+
+	/**
+	 * Convert a post-fix expression into a function.
+	 * @param queue The post-fix expression to be converted.
+	 * @return Function representation of the post-fix.
+	 */
+	private static Function<Double, Double> evaluatePostfix (Queue<Token> queue) {
 		
-		// Create necessary variables for turning the postfix notation into a function.
-		// TODO: Get this working totally properly.
-		Token a, b;
-		Function<Double, Double> op;
-		Function<Double, Double> result = (x) -> x;	// The identity function, I:R -> R s.t. I(x) = x.
+		// Stack to hold the tokens as conversion takes place.
+		Stack<Token> stack = new Stack<Token>();
 		
-		// Go through each element in the queue.
-		while (!queue.isEmpty()) {
+		// For each token in the queue, check its type and perform the requisite actions.
+		// Much of the logic lies in the methods called from the Token class.
+		for (Token t : queue) {
 			
-			// If the token is a number or an x, push it to the stack.
-			if (queue.peek().isNumeric()) {
-				stack.push(queue.remove());
+			// If the token is a constant or a variable, push it to the stack.
+			if (t.getType() == TokenType.CONSTANT || t.getType() == TokenType.VARIABLE) {
+				stack.push(t);
 			} 
 			
-			// If the token is a function, check whether it is unary or not, and act accordingly.
-			else if (queue.peek().isFunction()) {
-				
-				/*
-				 * If the function is unary, pop the top of the stack and apply it to that, and push the
-				 * value to the stack.
-				 * If it is an x, compose this function with the result function, and push an x to the
-				 * stack.
-				 */
-				if (queue.peek().isUnary() == 0) {
-					a = stack.pop();
-					op = queue.peek().getUnaryFunction();
-					queue.remove();
-					if (a.isX()) {
-						result = result.andThen(op);
-						stack.push(new Token("x"));
-					} else {
-						stack.push(new Token(op.apply(Double.parseDouble(a.getSymbol())).toString()));
-					}
-				} 
-				
-				/*
-				 * If the function is not unary, pop the top two elements of the stack. If neither is x, 
-				 * apply it to both tokens, and push the resulting value to the stack. 
-				 * If either is an x, then use the other value as an argument of the function, so it may be 
-				 * used as a unary operator. Then, compose it with the result function and push an x to the
-				 * stack.
-				 */
-				else if (queue.peek().isUnary() > 0) {
-					b = stack.pop();
-					a = stack.pop();
-					if (a.isX()) {
-						op = queue.peek().getBinaryFunction(b);
-						queue.remove();
-						result = result.andThen(op);
-						stack.push(new Token("x"));
-					} else if (b.isX()) {
-						op = queue.peek().getBinaryFunction(a);
-						queue.remove();
-						result = result.andThen(op);
-						stack.push(new Token("x"));
-					} else {
-						
-						// Check associativity for which token to use as an argument.
-						if (queue.peek().getAssociativity() == 0) {
-							op = queue.peek().getBinaryFunction(b);
-							stack.push(new Token(op.apply(Double.parseDouble(a.getSymbol())).toString()));
-						} else {
-							op = queue.peek().getBinaryFunction(a);
-							stack.push(new Token(op.apply(Double.parseDouble(b.getSymbol())).toString()));
-						}
-					}
-				}
+			// If the token is an operator, operate on the top two tokens of the stack.
+			else if (t.getType() == TokenType.OPERATOR) {
+				stack.push(new FunctionToken(t.operate(stack.pop(), stack.pop())));
 			} 
 			
-			/*
-			 * If the token is an operator, repeat the logic for a non-unary function
-			 * using the methods and values corresponding to an operator instead.
-			 */
-			else if (queue.peek().isOperator()) {
-				b = stack.pop();
-				a = stack.pop();
-				if (a.isX()) {
-					op = queue.peek().getOperator(b);
-					queue.remove();
-					result = result.andThen(op);
-					stack.push(new Token("x"));
-				} else if (b.isX()) {
-					op = queue.peek().getOperator(a);
-					queue.remove();
-					result = result.andThen(op);
-					stack.push(new Token("x"));
-				} else {
-					if (queue.peek().getAssociativity() == 0) {
-						op = queue.peek().getBinaryFunction(b);
-						stack.push(new Token(op.apply(Double.parseDouble(a.getSymbol())).toString()));
-					} else {
-						op = queue.peek().getBinaryFunction(a);
-						stack.push(new Token(op.apply(Double.parseDouble(b.getSymbol())).toString()));
-					}
+			// If the token is a function, apply it to the proper number of tokens from the top of the stack.
+			else if (t.getType() == TokenType.FUNCTION) {
+				if (t.getNumArgs() == 1) {
+					stack.push(new FunctionToken(t.applySingleArg(stack.pop())));
+				} else if (t.getNumArgs() == 2) {
+					stack.push(new FunctionToken(t.applyTwoArgs(stack.pop(), stack.pop())));
 				}
 			}
 		}
-		
-		// Return the composite function.
-		return result;
+		 
+		/*
+		 * Return the function from the top of the stack.
+		 * We know that the top of the stack will be a FunctionToken if the expression is valid,
+		 * so the cast will always work.
+		 */
+		return ((FunctionToken)stack.pop()).getFunction();
 	}
 }

@@ -144,7 +144,7 @@ public class InputBox extends VBox {
 		
 		/**
 		 * Graph the contents of the textfield.
-		 * TODO: Make better error handling.
+		 * TODO: Make better error handling. (Display something to user.)
 		 */
 		private void graph() {
 			
@@ -158,7 +158,7 @@ public class InputBox extends VBox {
 				ga.addGraph(g);
 				g.draw();
 			} catch (Exception e) {
-				System.out.println("Parser error or invalid input.");
+				System.err.println("Parser error or invalid input.");
 			}
 		}
 
