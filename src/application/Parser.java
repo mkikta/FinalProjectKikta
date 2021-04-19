@@ -11,7 +11,7 @@ import java.util.function.Function;
  * using Dijkstra's Shunting-Yard Algorithm. It has a helper method that converts this post-fix
  * expression into a function.
  * @author Mark Kikta
- * @version 0.2
+ * @version 0.3
  */
 public class Parser {
 	
@@ -46,6 +46,10 @@ public class Parser {
 		// Go through each token in the input.
 		while (st.hasMoreTokens()) {
 			token = new Token(st.nextToken());
+
+			if (token.getType() == TokenType.NULL) {
+				return null;
+			}
 			
 			// If the token is a number (or an x) add push it to the output queue.
 			if (token.getType() == TokenType.CONSTANT || token.getType() == TokenType.VARIABLE) {
@@ -94,6 +98,7 @@ public class Parser {
 					queue.add(stack.pop());
 				}
 			}
+			
 		}
 		
 		// Remove the placeholder from the operator stack.
@@ -115,6 +120,8 @@ public class Parser {
 	 */
 	private static Function<Double, Double> evaluatePostfix (Queue<Token> queue) {
 		
+		int length = queue.size();
+		
 		// Stack to hold the tokens as conversion takes place.
 		Stack<Token> stack = new Stack<Token>();
 		
@@ -125,11 +132,15 @@ public class Parser {
 			// If the token is a constant or a variable, push it to the stack.
 			if (t.getType() == TokenType.CONSTANT || t.getType() == TokenType.VARIABLE) {
 				stack.push(t);
-			} 
+			}
 			
 			// If the token is an operator, operate on the top two tokens of the stack.
 			else if (t.getType() == TokenType.OPERATOR) {
-				stack.push(new FunctionToken(t.operate(stack.pop(), stack.pop())));
+				if (stack.size() == 1 && t.getSymbol().equals("-")) {
+					stack.push(new FunctionToken(t.operate(stack.pop(), new Token("0"))));
+				} else {
+					stack.push(new FunctionToken(t.operate(stack.pop(), stack.pop())));
+				}
 			} 
 			
 			// If the token is a function, apply it to the proper number of tokens from the top of the stack.
@@ -141,12 +152,21 @@ public class Parser {
 				}
 			}
 		}
-		 
+		
 		/*
 		 * Return the function from the top of the stack.
-		 * We know that the top of the stack will be a FunctionToken if the expression is valid,
-		 * so the cast will always work.
+		 * If the top token is a variable or constant and it was the only
+		 * token in the queue, return it as a function. Otherwise, return null.
 		 */
-		return ((FunctionToken)stack.pop()).getFunction();
+		if (stack.size() != 1) {
+			return null;
+		} else if (stack.peek() instanceof FunctionToken) {
+			return ((FunctionToken)stack.pop()).getFunction();
+		} else if (stack.peek().getType() == TokenType.CONSTANT && length == 1) {
+			return x -> Double.parseDouble(stack.peek().getSymbol());
+		} else if (stack.peek().getType() == TokenType.VARIABLE && length == 1) {
+			return x -> x;
+		}
+		return null;
 	}
 }

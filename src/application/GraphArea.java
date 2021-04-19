@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javafx.geometry.Side;
-
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -16,7 +15,7 @@ import javafx.scene.shape.Line;
  * y-translation factors, and x- and y-scale factors. It has methods for adding and removing graphs,
  * updating, zooming, and panning.
  * @author Mark Kikta
- * @version 0.2
+ * @version 0.3
  */
 public class GraphArea extends Pane {
 	private double xMin, xMax;					// The minimum and maximum x values to display.
@@ -130,15 +129,15 @@ public class GraphArea extends Pane {
 		 * Set the bounds to new values, set the tick Unit, set the width equal to the width of this 
 		 * GraphArea, and translate the xAxis.
 		 */
-		xAxis.setLowerBound(xMin);
-		xAxis.setUpperBound(xMax);
+		xAxis.setLowerBound(xMin - xZoom);
+		xAxis.setUpperBound(xMax - xZoom);
 		xAxis.setTickUnit(xIncrement);
 		xAxis.setPrefWidth(width);
 		xAxis.setLayoutY(yTranslation);
 		
 		// Repeat for the y-axis with its respective values.
-		yAxis.setLowerBound(yMin);
-		yAxis.setUpperBound(yMax);
+		yAxis.setLowerBound(yMin + yZoom);
+		yAxis.setUpperBound(yMax + yZoom);
 		yAxis.setTickUnit(yIncrement);
 		yAxis.setPrefHeight(height);
 		yAxis.setLayoutX(xTranslation);
@@ -217,7 +216,7 @@ public class GraphArea extends Pane {
 			yMax *= yMax > 0 ? ZOOM : 1 / ZOOM;
 			yMin *= yMin < 0 ? ZOOM : 1 / ZOOM;
 		}
-		
+
 		// Determine the coordinates of the mouse with respect to the modified coordinate system.
 		double graphX2 = x / getWidth() * (xMax - xMin) - Math.abs(xMax);
 		double graphY2 = -y / getHeight() * (yMax - yMin) + Math.abs(yMin);
@@ -225,6 +224,7 @@ public class GraphArea extends Pane {
 		// Adjust these values to account for the change between coordinate position.
 		xZoom += graphX2 - graphX1;
 		yZoom += graphY1 - graphY2;
+		
 	}
 	
 	/**

@@ -9,7 +9,7 @@ import java.util.function.Function;
  * the type of token it is, its associativity, and its precedence. It has methods for applying functions and 
  * operators.
  * @author Mark Kikta
- * @version 0.2
+ * @version 0.3
  */
 public class Token {
 	private String symbol;										// The string that this token represents.
@@ -34,7 +34,11 @@ public class Token {
 			type = TokenType.CONSTANT;
 		} else if (symbol.equals("x")) {
 			type = TokenType.VARIABLE;
-		} 
+		} else if (symbol.equals(",")) {
+			type = TokenType.COMMA;
+		} else if (symbol.equals("(") || symbol.equals(")")) {
+			type = TokenType.PARENTHESES;
+		}
 		
 		/*
 		 * If it is an operator, also set its precedence and associativity.

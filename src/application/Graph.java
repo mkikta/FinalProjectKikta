@@ -1,9 +1,6 @@
 package application;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Function;
-
 import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
@@ -14,14 +11,12 @@ import javafx.scene.shape.Rectangle;
  * measure of how far between x values the function should be calculated, and the GraphArea that this graph belongs
  * to. It has a method for drawing itself onto its GraphArea.
  * @author Mark Kikta
- * @version 0.3
+ * @version 0.4
  */
 public class Graph extends Path {
 	
-	private List<Double> xPoints, yPoints;	// Parallel lists of the x- and y-coordinates of the function.
-	private double increment;				// How close between x values the function should be calculated.
 	private GraphArea ga;					// The GraphArea that this graph belongs to.
-	private int startIndex, stopIndex;		// Where to start drawing x values and where to stop drawing x values.
+	private Function<Double, Double> func;
 	
 	/**
 	 * Set this graph's fields and determine the points on the function.
@@ -29,35 +24,16 @@ public class Graph extends Path {
 	 * @param increment How far between x values to calculate the function.
 	 * @param ga The GraphArea that this graph belongs to.
 	 */
-	public Graph (Function<Double, Double> func, double increment, GraphArea ga) {
+	public Graph (Function<Double, Double> func, GraphArea ga) {
 		
 		// Set all the fields that can be set easily.
-		this.increment = increment;
 		this.ga = ga;
-		
-		// Create two empty ArrayLists to hold the coordinates of points.
-		xPoints = new ArrayList<Double>();
-		yPoints = new ArrayList<Double>();
+		this.func = func;
 		
 		// Set this path's stroke width.
 		setStrokeWidth(2);
 		
 		// For each a wide range of points, both on and off the scene, add the point along the function to the lists.
-		double x, y;
-		for (x = ga.getXMin() - Math.abs(ga.getXMin()) * 100; x <= ga.getXMax() + Math.abs(ga.getXMax()) * 100; x += increment) {
-			
-			// Set the initial start and stop indices to the last value before xMin and the first value after xMax.
-			if (x <= ga.getXMin() - increment) {
-				startIndex = xPoints.size();
-			} else if (x <= ga.getXMax() + increment) {
-				stopIndex = xPoints.size();
-			}
-			
-			// Calculate the y-coordinate of the point by applying the given function.
-			y = func.apply(x);
-			xPoints.add(x);
-			yPoints.add(y);
-		}
 		
 		// Add a new class representing this one to the CSS file.
 		getStyleClass().add("graph");
@@ -71,36 +47,29 @@ public class Graph extends Path {
 		// Clear the path.
 		getElements().clear();
 		
-		//TODO: determine how to increment start and stop indices.
-		// The current value of 1000 is just a proof of concept.
-		startIndex -= 1000;
-		stopIndex += 1000;
-		
 		// Create variables for these so the counterpart functions don't have to be repeatedly called.
 		double xScale = ga.getXScale();
 		double xTrans = ga.getXTranslation();
 		double yScale = ga.getYScale();
 		double yTrans = ga.getYTranslation();
+		double diff = ga.getXMax() - ga.getXMin();
 		
-		// Set the first point and add it to this path's list of elements.
-		double x = xPoints.get(startIndex);
-		double y = yPoints.get(startIndex);
-		getElements().add(new MoveTo(x * xScale + xTrans, -y * yScale + yTrans));
+		// Make increments dynamic.
+		double increment = diff / 20000;
 		
-		// This variable represents the previous y-coordinate, and will be used for determining continuity.
+		double x = ga.getXMin() - Math.abs(ga.getXMin());
+		double y = func.apply(x);
 		double prevY;
-		
-		// For each point after the one already used in the lists of coordinates, add it to the path elements.
-		for (int i = startIndex + 1; i < stopIndex; ++i) {
+		getElements().add(new MoveTo(x * xScale + xTrans, -y * yScale + yTrans));
+		//Values need to be exactly double for some reason that eludes me.
+		for (x = ga.getXMin() - Math.abs(ga.getXMin()) + increment; x <= ga.getXMax() + Math.abs(ga.getXMax()); x += increment) {
 			prevY = y;
-			x = xPoints.get(i);
-			y = yPoints.get(i);
 			
-			/*
-			 *  If the change between y-coordinates is too steep given a single increment, assume the function
-			 *  has a discontinuity there. There is definitely a better way to determine this.
-			 */
-			if (Math.abs(y - prevY) / increment > 999) {
+			// Calculate the y-coordinate of the point by applying the given function.
+			y = func.apply(x);
+			
+			//TODO: Better method for determining discontinuity
+			if (Math.abs((y - prevY) / increment) > 999) {
 				
 				// If the function is discontinuous, merely move to the next point.
 				getElements().add(new MoveTo(x * xScale + xTrans, -y * yScale + yTrans));

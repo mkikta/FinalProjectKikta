@@ -2,6 +2,8 @@ package application;
 
 import java.util.function.Function;
 
+import javafx.animation.FadeTransition;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.CacheHint;
 import javafx.scene.control.Button;
@@ -12,6 +14,12 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
+import javafx.util.Duration;
 
 /**
  * This class represents a place for the user to input functions that they want 
@@ -19,7 +27,7 @@ import javafx.scene.layout.VBox;
  * rows that it contains. It has a private class ButtonBox that is used for each
  * input row. It has methods for removing rows and adding rows.
  * @author Mark Kikta
- * @version 0.1
+ * @version 0.2
  */
 public class InputBox extends VBox {
 	
@@ -56,13 +64,16 @@ public class InputBox extends VBox {
 	}
 	
 	/**
-	 * Add a row after the given row and increment the number of rows.
+	 * Add a row after the given row and increment the number of rows, if the bottom row is
+	 * not empty.
 	 * @param bb The given row.
 	 */
 	public void addRow (ButtonBox bb) {
-		int index = getChildren().indexOf(bb);
-		getChildren().add(index + 1, new ButtonBox());
-		rows++;
+		if (!((ButtonBox) getChildren().get(getChildren().size() - 1)).getTextField().getCharacters().toString().equals("")) {
+			int index = getChildren().indexOf(bb);
+			getChildren().add(index + 1, new ButtonBox());
+			rows++;
+		}
 	}
 	
 	/**
@@ -87,7 +98,7 @@ public class InputBox extends VBox {
 			
 			// Create a new button and replace it with an x.
 			b = new Button();
-			ImageView iv = new ImageView("application/x.png");
+			ImageView x = new ImageView("application/x.png");
 			
 			// These color adjusts will be used when interacting with the button.
 			ColorAdjust grey = new ColorAdjust();
@@ -99,9 +110,9 @@ public class InputBox extends VBox {
 			b.setOnMousePressed(new EventHandler<MouseEvent>() {
 				@Override
 				public void handle(MouseEvent e) {
-					iv.setEffect(grey);
-					iv.setCache(true);
-					iv.setCacheHint(CacheHint.SPEED);
+					x.setEffect(grey);
+					x.setCache(true);
+					x.setCacheHint(CacheHint.SPEED);
 				}
 			});
 			
@@ -112,9 +123,9 @@ public class InputBox extends VBox {
 			b.setOnMouseReleased(new EventHandler<MouseEvent>() {
 				@Override
 				public void handle(MouseEvent e) {
-					iv.setEffect(white);
-					iv.setCache(true);
-					iv.setCacheHint(CacheHint.SPEED);
+					x.setEffect(white);
+					x.setCache(true);
+					x.setCacheHint(CacheHint.SPEED);
 					tf.clear();
 					ga.removeGraph(g);
 					removeThisRow();
@@ -122,9 +133,9 @@ public class InputBox extends VBox {
 			});
 			
 			// Finish formatting button.
-			iv.setFitHeight(15);
-			iv.setPreserveRatio(true);
-			b.setGraphic(iv);
+			x.setFitHeight(15);
+			x.setPreserveRatio(true);
+			b.setGraphic(x);
 			
 			// Create a new textfield that graphs its content when the user presses enter.
 			tf = new TextField();
@@ -144,7 +155,6 @@ public class InputBox extends VBox {
 		
 		/**
 		 * Graph the contents of the textfield.
-		 * TODO: Make better error handling. (Display something to user.)
 		 */
 		private void graph() {
 			
@@ -154,11 +164,41 @@ public class InputBox extends VBox {
 			// Parse the contents of the textfield, then graph it.
 			try {
 				Function<Double, Double> f = Parser.parse(tf.getCharacters().toString());
-				g = new Graph(f, 0.001, ga);
+				g = new Graph(f, ga);
 				ga.addGraph(g);
 				g.draw();
-			} catch (Exception e) {
-				System.err.println("Parser error or invalid input.");
+			} 
+			
+			// If an error occurs, display an error message to the user.
+			catch (Exception e) {
+				
+				// If there already is an error message, remove it.
+				if (getChildren().get(getChildren().size() - 1) instanceof Text) {
+					getChildren().remove(getChildren().size() - 1);
+				}
+				
+				// Create and format the error message.
+				Text errorMessage = new Text("Invalid input!");
+				errorMessage.setFont(Font.font("arial", FontWeight.NORMAL, FontPosture.REGULAR, 20));
+				errorMessage.setFill(Color.LIGHTGRAY);
+				getChildren().add(errorMessage);
+				
+				// Create, format, and apply a fade to the error meesage.
+				FadeTransition fade = new FadeTransition();
+				fade.setDelay(Duration.millis(2000));
+				fade.setDuration(Duration.millis(1000));
+				fade.setFromValue(10);
+				fade.setToValue(0);
+				fade.setNode(errorMessage);
+				fade.play();
+				
+				// When it is over, remove the error message.
+				fade.setOnFinished(new EventHandler<ActionEvent>() {
+					@Override
+					public void handle(ActionEvent arg0) {
+						getChildren().remove(errorMessage);
+					}
+				});
 			}
 		}
 
@@ -172,10 +212,16 @@ public class InputBox extends VBox {
 		}
 		
 		/**
-		 * Add a new row below this one.
+		 * Add a new row below this one if it is not empty.
 		 */
 		private void addNewRow () {
-			addRow(this);
+			if (!tf.getCharacters().toString().equals("")) {
+				addRow(this);
+			}
+		}
+		
+		public TextField getTextField () {
+			return tf;
 		}
 	}
 }

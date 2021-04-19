@@ -1,11 +1,11 @@
 package application;
 
 import javafx.application.Application;
-//import javafx.event.EventHandler;
+import javafx.event.EventHandler;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 //import javafx.scene.input.MouseEvent;
-//import javafx.scene.input.ScrollEvent;
+import javafx.scene.input.ScrollEvent;
 
 /**
  * This program displays a graph area and an input box for users to enter a function
@@ -13,7 +13,7 @@ import javafx.scene.Scene;
  * the parser fully functional as well as fix zooming and panning so I can add them back
  * in.
  * @author Mark Kikta
- * @version 0.5
+ * @version 0.6
  */
 public class Runner extends Application {
 	
@@ -42,7 +42,6 @@ public class Runner extends Application {
 		    
 		    // This code is commented out until I get it working properly.
 		    // TODO: Fix zooming and panning.
-		    /*
 		    // Create an event handler for zooming
 		    EventHandler<ScrollEvent> zoomer = new EventHandler<ScrollEvent>() {
 		    	@Override
@@ -53,7 +52,7 @@ public class Runner extends Application {
 		    	}
 		    };
 		    scene.addEventFilter(ScrollEvent.ANY, zoomer);
-		    
+		    /*
 		    // The next three event handlers are all necessary for panning.
 		    // This one is called whenever a pan starts.
 		    EventHandler<MouseEvent> panStart = new EventHandler<MouseEvent>() {
