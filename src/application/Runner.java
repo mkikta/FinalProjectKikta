@@ -4,7 +4,7 @@ import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
-//import javafx.scene.input.MouseEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 
 /**
@@ -52,10 +52,10 @@ public class Runner extends Application {
 		    	}
 		    };
 		    scene.addEventFilter(ScrollEvent.ANY, zoomer);
-		    /*
+		    
 		    // The next three event handlers are all necessary for panning.
 		    // This one is called whenever a pan starts.
-		    EventHandler<MouseEvent> panStart = new EventHandler<MouseEvent>() {
+		   /* EventHandler<MouseEvent> panStart = new EventHandler<MouseEvent>() {
 		    	@Override
 		    	// Get the coordinates of where the mouse is when the pan starts.
 		    	public void handle (MouseEvent e) {
@@ -89,8 +89,8 @@ public class Runner extends Application {
 		    		ga.update();
 		    	}
 		    };
-		    scene.addEventFilter(MouseEvent.MOUSE_DRAGGED, panner);
-			*/
+		    scene.addEventFilter(MouseEvent.MOUSE_DRAGGED, panner);*/
+			
 		    
 		    // Attach the CSS file, add the scene to the stage, format the stage, and finally show the stage.
 	    	scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());

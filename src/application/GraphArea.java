@@ -27,7 +27,7 @@ public class GraphArea extends Pane {
 	private double xTranslation, yTranslation;	// The translation factors that need to be applied to a graph.
 	private double xScale, yScale;				// The scale factors that need to be applied to a graph.
 	
-	private static final double ZOOM = 1.15;	// How quickly to zoom.
+	private static final double ZOOM = 1.1;	// How quickly to zoom.
 	private double xZoom = 0;					// How much offset in the x direction that zooming is responsible for.
 	private double yZoom = 0;					// How much offset in the y direction that zooming is responsible for.
 	private double xTempPan = 0;				// How much offset in the x direction that current panning is responsible for.
@@ -146,8 +146,7 @@ public class GraphArea extends Pane {
 		Line l;
 				
 		// Draw subdividing lines across the GraphArea, first in the x direction.
-		// I halved the number of subdividing lines because the screen looked too crowded.
-		for (double i = 0; i < width; i += xIncrement / 2) {
+		for (double i = 0; i < 2 * xMax; i += xIncrement / 2) {
 					
 			// Account for the scale factor and set the stroke width.
 			l = new Line(i * xScale, 0, i * xScale, height);
@@ -161,7 +160,7 @@ public class GraphArea extends Pane {
 		}
 				
 		// Repeat for the y direction.
-		for (double j = 0; j < height; j += yIncrement / 2) {
+		for (double j = 0; j < 2 * yMax; j += yIncrement / 2) {
 			l = new Line(0, j * yScale, width, j * yScale);
 			l.setStrokeWidth(0.2);
 			l.setStroke(Color.GREY);
@@ -327,5 +326,10 @@ public class GraphArea extends Pane {
 	 */
 	public double getYScale() {
 		return yScale;
+	}
+
+	public double getXZoom() {
+		// TODO Auto-generated method stub
+		return xZoom;
 	}
 }

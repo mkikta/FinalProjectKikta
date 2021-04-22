@@ -57,17 +57,17 @@ public class Graph extends Path {
 		// Make increments dynamic.
 		double increment = diff / 20000;
 		
-		double x = ga.getXMin() - Math.abs(ga.getXMin());
+		double x = ga.getXMin() - ga.getXZoom();
 		double y = func.apply(x);
 		double prevY;
 		getElements().add(new MoveTo(x * xScale + xTrans, -y * yScale + yTrans));
-		//Values need to be exactly double for some reason that eludes me.
-		for (x = ga.getXMin() - Math.abs(ga.getXMin()) + increment; x <= ga.getXMax() + Math.abs(ga.getXMax()); x += increment) {
+		
+		for (x = ga.getXMin() - ga.getXZoom() + increment; x <= ga.getXMax() - ga.getXZoom(); x += increment) {
 			prevY = y;
 			
 			// Calculate the y-coordinate of the point by applying the given function.
 			y = func.apply(x);
-			
+
 			//TODO: Better method for determining discontinuity
 			if (Math.abs((y - prevY) / increment) > 999) {
 				
