@@ -9,7 +9,7 @@ import java.util.function.Function;
  * the type of token it is, its associativity, and its precedence. It has methods for applying functions and 
  * operators.
  * @author Mark Kikta
- * @version 0.3
+ * @version 0.4
  */
 public class Token {
 	private String symbol;										// The string that this token represents.

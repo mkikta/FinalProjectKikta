@@ -27,7 +27,7 @@ import javafx.util.Duration;
  * rows that it contains. It has a private class ButtonBox that is used for each
  * input row. It has methods for removing rows and adding rows.
  * @author Mark Kikta
- * @version 0.2
+ * @version 0.3
  */
 public class InputBox extends VBox {
 	
@@ -183,7 +183,7 @@ public class InputBox extends VBox {
 				errorMessage.setFill(Color.LIGHTGRAY);
 				getChildren().add(errorMessage);
 				
-				// Create, format, and apply a fade to the error meesage.
+				// Create, format, and apply a fade to the error message.
 				FadeTransition fade = new FadeTransition();
 				fade.setDelay(Duration.millis(2000));
 				fade.setDuration(Duration.millis(1000));

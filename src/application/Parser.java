@@ -11,7 +11,7 @@ import java.util.function.Function;
  * using Dijkstra's Shunting-Yard Algorithm. It has a helper method that converts this post-fix
  * expression into a function.
  * @author Mark Kikta
- * @version 0.3
+ * @version 0.4
  */
 public class Parser {
 	

@@ -15,7 +15,7 @@ import javafx.scene.shape.Line;
  * y-translation factors, and x- and y-scale factors. It has methods for adding and removing graphs,
  * updating, zooming, and panning.
  * @author Mark Kikta
- * @version 0.3
+ * @version 0.4
  */
 public class GraphArea extends Pane {
 	private double xMin, xMax;					// The minimum and maximum x values to display.
@@ -27,7 +27,7 @@ public class GraphArea extends Pane {
 	private double xTranslation, yTranslation;	// The translation factors that need to be applied to a graph.
 	private double xScale, yScale;				// The scale factors that need to be applied to a graph.
 	
-	private static final double ZOOM = 1.1;	// How quickly to zoom.
+	private static final double ZOOM = 1.05;	// How quickly to zoom.
 	private double xZoom = 0;					// How much offset in the x direction that zooming is responsible for.
 	private double yZoom = 0;					// How much offset in the y direction that zooming is responsible for.
 	private double xTempPan = 0;				// How much offset in the x direction that current panning is responsible for.
@@ -127,22 +127,22 @@ public class GraphArea extends Pane {
 		
 		/*
 		 * Set the bounds to new values, set the tick Unit, set the width equal to the width of this 
-		 * GraphArea, and translate the xAxis.
+		 * GraphArea, and translate the xAxis. Make sure to adjust the bounds based off of zooming and panning.
 		 */
-		xAxis.setLowerBound(xMin - xZoom);
-		xAxis.setUpperBound(xMax - xZoom);
+		xAxis.setLowerBound(xMin - xZoom - xTempPan - xPermaPan);
+		xAxis.setUpperBound(xMax - xZoom - xTempPan - xPermaPan);
 		xAxis.setTickUnit(xIncrement);
 		xAxis.setPrefWidth(width);
 		xAxis.setLayoutY(yTranslation);
 		
 		// Repeat for the y-axis with its respective values.
-		yAxis.setLowerBound(yMin + yZoom);
-		yAxis.setUpperBound(yMax + yZoom);
+		yAxis.setLowerBound(yMin + yZoom + yTempPan + yPermaPan);
+		yAxis.setUpperBound(yMax + yZoom + yTempPan + yPermaPan);
 		yAxis.setTickUnit(yIncrement);
 		yAxis.setPrefHeight(height);
 		yAxis.setLayoutX(xTranslation);
 		
-		// Instantiate the list of lines and a temporary Line.
+		// Instantiate a temporary Line.
 		Line l;
 				
 		// Draw subdividing lines across the GraphArea, first in the x direction.
@@ -175,7 +175,7 @@ public class GraphArea extends Pane {
 			try {
 				g.draw();
 			} catch (Exception e) {
-				System.out.println("Parse error or invalid function.");
+				// InputBox will display error message.
 			}
 		}
 		getChildren().add(ib);
@@ -189,8 +189,6 @@ public class GraphArea extends Pane {
 	 * @param y Where on the scene the scroll occurred in the y direction.
 	 */
 	public void zoom (double deltaY, double x, double y) {
-		
-		//TODO: Fix the max and min values after translation so that the axes meet at 0.
 		
 		// Determine the coordinates of the mouse with respect to the coordinate system.
 		double graphX1 = x / getWidth() * (xMax - xMin) - Math.abs(xMax);
@@ -235,7 +233,6 @@ public class GraphArea extends Pane {
 	 * @param y Where the pan is currently at in the y direction.
 	 */
 	public void pan (double xStart, double yStart, double x, double y) {
-		//TODO: Fix the max and min values after translation so that the axes meet at 0.
 		
 		// Determine the coordinates of the mouse with respect to the coordinate system.
 		x = x / getWidth() * (xMax - xMin) - Math.abs(xMax);
@@ -252,6 +249,8 @@ public class GraphArea extends Pane {
 	public void endPan() {
 		xPermaPan += xTempPan;
 		yPermaPan += yTempPan;
+		xTempPan = 0;
+		yTempPan = 0;
 	}
 	
 	/**
@@ -328,8 +327,24 @@ public class GraphArea extends Pane {
 		return yScale;
 	}
 
+	/**
+	 * @return xZoom
+	 */
 	public double getXZoom() {
-		// TODO Auto-generated method stub
 		return xZoom;
+	}
+
+	/**
+	 * @return xTempPan
+	 */
+	public double getXTempPan() {
+		return xTempPan;
+	}
+
+	/**
+	 * @return xPermaPan
+	 */
+	public double getXPermaPan() {
+		return xPermaPan;
 	}
 }

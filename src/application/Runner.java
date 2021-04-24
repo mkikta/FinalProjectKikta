@@ -9,15 +9,13 @@ import javafx.scene.input.ScrollEvent;
 
 /**
  * This program displays a graph area and an input box for users to enter a function
- * to be graphed. This is the only way it is interactive currently. I need to make
- * the parser fully functional as well as fix zooming and panning so I can add them back
- * in.
+ * to be graphed. The graph area is able to be smoothly zoomed and scrolled on.
  * @author Mark Kikta
- * @version 0.6
+ * @version 0.7
  */
 public class Runner extends Application {
 	
-	//private double xPanStart, yPanStart;	// These are used to keep track of where a pan starts.
+	private double xPanStart, yPanStart;	// These are used to keep track of where a pan starts.
 	
 	@Override
 	/**
@@ -40,8 +38,6 @@ public class Runner extends Application {
 			scene.heightProperty().addListener(event -> {ga.update();});
 		    scene.widthProperty().addListener(event -> {ga.update();});
 		    
-		    // This code is commented out until I get it working properly.
-		    // TODO: Fix zooming and panning.
 		    // Create an event handler for zooming
 		    EventHandler<ScrollEvent> zoomer = new EventHandler<ScrollEvent>() {
 		    	@Override
@@ -55,7 +51,7 @@ public class Runner extends Application {
 		    
 		    // The next three event handlers are all necessary for panning.
 		    // This one is called whenever a pan starts.
-		   /* EventHandler<MouseEvent> panStart = new EventHandler<MouseEvent>() {
+		    EventHandler<MouseEvent> panStart = new EventHandler<MouseEvent>() {
 		    	@Override
 		    	// Get the coordinates of where the mouse is when the pan starts.
 		    	public void handle (MouseEvent e) {
@@ -64,7 +60,7 @@ public class Runner extends Application {
 		    		 *  Convert the location given by the mouse event (which is relative to the width and
 		    		 *  height of the scene) to be relative to the coordinates of the graph area.
 		    		 */
-		    		/*xPanStart = e.getX() / ga.getWidth() * (ga.getXMax() - ga.getXMin()) - Math.abs(ga.getXMax());		    		
+		    		xPanStart = e.getX() / ga.getWidth() * (ga.getXMax() - ga.getXMin()) - Math.abs(ga.getXMax());		    		
 		    		yPanStart = -e.getY() / ga.getHeight() * (ga.getYMax() - ga.getYMin()) + Math.abs(ga.getYMin());
 		    	}
 		    };
@@ -89,7 +85,7 @@ public class Runner extends Application {
 		    		ga.update();
 		    	}
 		    };
-		    scene.addEventFilter(MouseEvent.MOUSE_DRAGGED, panner);*/
+		    scene.addEventFilter(MouseEvent.MOUSE_DRAGGED, panner);
 			
 		    
 		    // Attach the CSS file, add the scene to the stage, format the stage, and finally show the stage.

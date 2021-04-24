@@ -11,12 +11,12 @@ import javafx.scene.shape.Rectangle;
  * measure of how far between x values the function should be calculated, and the GraphArea that this graph belongs
  * to. It has a method for drawing itself onto its GraphArea.
  * @author Mark Kikta
- * @version 0.4
+ * @version 0.5
  */
 public class Graph extends Path {
 	
 	private GraphArea ga;					// The GraphArea that this graph belongs to.
-	private Function<Double, Double> func;
+	private Function<Double, Double> func;	// The function that this graph represents.
 	
 	/**
 	 * Set this graph's fields and determine the points on the function.
@@ -32,8 +32,6 @@ public class Graph extends Path {
 		
 		// Set this path's stroke width.
 		setStrokeWidth(2);
-		
-		// For each a wide range of points, both on and off the scene, add the point along the function to the lists.
 		
 		// Add a new class representing this one to the CSS file.
 		getStyleClass().add("graph");
@@ -57,12 +55,15 @@ public class Graph extends Path {
 		// Make increments dynamic.
 		double increment = diff / 20000;
 		
-		double x = ga.getXMin() - ga.getXZoom();
+		// Move the path to the first point on the left edge of the scene.
+		double x = ga.getXMin() - ga.getXZoom() - ga.getXTempPan() - ga.getXPermaPan();
 		double y = func.apply(x);
 		double prevY;
 		getElements().add(new MoveTo(x * xScale + xTrans, -y * yScale + yTrans));
 		
-		for (x = ga.getXMin() - ga.getXZoom() + increment; x <= ga.getXMax() - ga.getXZoom(); x += increment) {
+		// For each x value after the first, calculate its y value and plot it.
+		// The modifiers on xMin and xMax account for zooming and panning on ga.
+		for (x = ga.getXMin() - ga.getXZoom() - ga.getXTempPan() - ga.getXPermaPan() + increment; x <= ga.getXMax() - ga.getXZoom() - ga.getXTempPan() - ga.getXPermaPan(); x += increment) {
 			prevY = y;
 			
 			// Calculate the y-coordinate of the point by applying the given function.
