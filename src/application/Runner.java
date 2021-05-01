@@ -34,6 +34,7 @@ public class Runner extends Application {
 			// Create a new Scene.
 			Scene scene = new Scene(ga);
 			
+			
 			// Update the graphArea, re-add the graph, and redraw it when the scene is resized.
 			scene.heightProperty().addListener(event -> {ga.update();});
 		    scene.widthProperty().addListener(event -> {ga.update();});

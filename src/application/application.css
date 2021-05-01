@@ -1,14 +1,10 @@
 .graph-area {
-	-fx-background-color: DarkSlateGrey;
+	-fx-background-color: DarkSlateGray;
 }
 
 
 .axis {
 	-fx-tick-label-fill: AntiqueWhite;
-}
-
-.graph {
-	-fx-stroke: DarkSalmon;
 }
 
 .button {

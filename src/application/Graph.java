@@ -1,6 +1,8 @@
 package application;
 
 import java.util.function.Function;
+
+import javafx.scene.paint.Color;
 import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
@@ -24,7 +26,7 @@ public class Graph extends Path {
 	 * @param increment How far between x values to calculate the function.
 	 * @param ga The GraphArea that this graph belongs to.
 	 */
-	public Graph (Function<Double, Double> func, GraphArea ga) {
+	public Graph (Function<Double, Double> func, GraphArea ga, Color color) {
 		
 		// Set all the fields that can be set easily.
 		this.ga = ga;
@@ -32,6 +34,7 @@ public class Graph extends Path {
 		
 		// Set this path's stroke width.
 		setStrokeWidth(2);
+		this.setStroke(color);
 		
 		// Add a new class representing this one to the CSS file.
 		getStyleClass().add("graph");

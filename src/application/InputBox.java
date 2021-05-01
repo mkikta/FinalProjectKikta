@@ -164,7 +164,7 @@ public class InputBox extends VBox {
 			// Parse the contents of the textfield, then graph it.
 			try {
 				Function<Double, Double> f = Parser.parse(tf.getCharacters().toString());
-				g = new Graph(f, ga);
+				g = new Graph(f, ga, new Color(Math.random(), Math.random(), Math.random(), 1));
 				ga.addGraph(g);
 				g.draw();
 			} 

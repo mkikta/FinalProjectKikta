@@ -27,7 +27,7 @@ public class GraphArea extends Pane {
 	private double xTranslation, yTranslation;	// The translation factors that need to be applied to a graph.
 	private double xScale, yScale;				// The scale factors that need to be applied to a graph.
 	
-	private static final double ZOOM = 1.05;	// How quickly to zoom.
+	private static final double ZOOM = 1.075;	// How quickly to zoom.
 	private double xZoom = 0;					// How much offset in the x direction that zooming is responsible for.
 	private double yZoom = 0;					// How much offset in the y direction that zooming is responsible for.
 	private double xTempPan = 0;				// How much offset in the x direction that current panning is responsible for.
@@ -178,7 +178,7 @@ public class GraphArea extends Pane {
 				// InputBox will display error message.
 			}
 		}
-		getChildren().add(ib);
+		getChildren().addAll(ib);
 	}
 	
 	/**

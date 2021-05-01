@@ -17,7 +17,7 @@ public class Token {
 	private int precedence;										// The precedence of this token, -1 if not operator.
 	private boolean associativity;								// The associativity of this token, -1 if not operator.
 	private static final List<String> FUNCTIONS = 
-			Arrays.asList("sin", "cos", "tan", "max", "min");	// Currently supported functions.
+			Arrays.asList("abs", "acos", "asin", "atan", "cbrt", "ceil", "cos", "cosh", "exp", "floor", "log", "ln", "max", "min", "round", "sin", "sinh", "sqrt","tan", "tanh");	// Currently supported functions.
 	private static final List<String> OPERATORS = 
 			Arrays.asList("+", "-", "*", "/", "^");				// Currently supported operators.
 	
@@ -78,6 +78,15 @@ public class Token {
 	 */
 	private boolean isNumeric () {
 		
+		// If it is e or pi, change its symbol.
+		if (symbol.equals("e")) {
+			symbol = ((Double)Math.E).toString();
+			return true;
+		} else if (symbol.equals("pi")) {
+			symbol = ((Double)Math.PI).toString();
+			return true;
+		}
+		
 		// If the symbol cannot be parsed as a double, than it is not numeric.
 		try {
 			Double.parseDouble(symbol);
@@ -91,11 +100,41 @@ public class Token {
 	 * @return How many arguments this function takes. -1 if not a function.
 	 */
 	public int getNumArgs () {
-		if (symbol.equals("sin")) {
+		if (symbol.equals("abs")) {
+			return 1;
+		} else if (symbol.equals("acos")) {
+			return 1;
+		} else if (symbol.equals("asin")) {
+			return 1;
+		} else if (symbol.equals("atan")) {
+			return 1;
+		} else if (symbol.equals("cbrt")) {
+			return 1;
+		} else if (symbol.equals("ceil")) {
 			return 1;
 		} else if (symbol.equals("cos")) {
 			return 1;
+		} else if (symbol.equals("cosh")) {
+			return 1;
+		} else if (symbol.equals("exp")) {
+			return 1;
+		} else if (symbol.equals("floor")) {
+			return 1;
+		} else if (symbol.equals("log")) {
+			return 1;
+		} else if (symbol.equals("ln")) {
+			return 1;
+		} else if (symbol.equals("round")) {
+			return 1;
+		} else if (symbol.equals("sin")) {
+			return 1;
+		} else if (symbol.equals("sinh")) {
+			return 1;
+		} else if (symbol.equals("sqrt")) {
+			return 1;
 		} else if (symbol.equals("tan")) {
+			return 1;
+		} else if (symbol.equals("tanh")) {
 			return 1;
 		} else if (symbol.equals("max")) {
 			return 2;
@@ -283,36 +322,126 @@ public class Token {
 		
 		// If a is a variable, use 'x' as the argument.
 		if (a.getType() == TokenType.VARIABLE) {
-			if (symbol.equals("sin")) {
-				return (x) -> Math.sin(x);
+			if (symbol.equals("abs")) {
+				return (x) -> Math.abs(x);
+			} else if (symbol.equals("acos")) {
+				return (x) -> Math.acos(x);
+			} else if (symbol.equals("asin")) {
+				return (x) -> Math.asin(x);
+			} else if (symbol.equals("atan")) { 
+				return (x) -> Math.atan(x);
+			} else if (symbol.equals("cbrt")) {
+				return (x) -> Math.cbrt(x);
+			} else if (symbol.equals("ceil")) {
+				return (x) -> Math.ceil(x);
 			} else if (symbol.equals("cos")) {
 				return (x) -> Math.cos(x);
+			} else if (symbol.equals("cosh")) {
+				return (x) -> Math.cosh(x);
+			} else if (symbol.equals("exp")) {
+				return (x) -> Math.exp(x);
+			} else if (symbol.equals("floor")) {
+				return (x) -> Math.floor(x);
+			} else if (symbol.equals("log")) {
+				return (x) -> Math.log10(x);
+			} else if (symbol.equals("ln")) {
+				return (x) -> Math.log(x);
+			} else if (symbol.equals("round")) {
+				return (x) -> (double) Math.round(x);
+			} else if (symbol.equals("sin")) {
+				return (x) -> Math.sin(x);
+			} else if (symbol.equals("sinh")) {
+				return (x) -> Math.sinh(x);
+			} else if (symbol.equals("sqrt")) {
+				return (x) -> Math.sqrt(x);
 			} else if (symbol.equals("tan")) {
 				return (x) -> Math.tan(x);
-			}
+			} else if (symbol.equals("tanh")) {
+				return (x) -> Math.tanh(x);
+			} 
 		} 
 		
 		// If a is a constant, use its value as the argument.
 		else if (a.getType() == TokenType.CONSTANT) {
 			double y = Double.parseDouble(a.getSymbol());
-			if (symbol.equals("sin")) {
-				return (x) -> Math.sin(y);
+			if (symbol.equals("abs")) {
+				return (x) -> Math.abs(y);
+			} else if (symbol.equals("acos")) {
+				return (x) -> Math.acos(y);
+			} else if (symbol.equals("asin")) {
+				return (x) -> Math.asin(y);
+			} else if (symbol.equals("atan")) { 
+				return (x) -> Math.atan(y);
+			} else if (symbol.equals("cbrt")) {
+				return (x) -> Math.cbrt(y);
+			} else if (symbol.equals("ceil")) {
+				return (x) -> Math.ceil(y);
 			} else if (symbol.equals("cos")) {
 				return (x) -> Math.cos(y);
+			} else if (symbol.equals("cosh")) {
+				return (x) -> Math.cosh(y);
+			} else if (symbol.equals("exp")) {
+				return (x) -> Math.exp(y);
+			} else if (symbol.equals("floor")) {
+				return (x) -> Math.floor(y);
+			} else if (symbol.equals("log")) {
+				return (x) -> Math.log10(y);
+			} else if (symbol.equals("ln")) {
+				return (x) -> Math.log(y);
+			} else if (symbol.equals("round")) {
+				return (x) -> (double) Math.round(y);
+			} else if (symbol.equals("sin")) {
+				return (x) -> Math.sin(y);
+			} else if (symbol.equals("sinh")) {
+				return (x) -> Math.sinh(y);
+			} else if (symbol.equals("sqrt")) {
+				return (x) -> Math.sqrt(y);
 			} else if (symbol.equals("tan")) {
 				return (x) -> Math.tan(y);
-			}
+			} else if (symbol.equals("tanh")) {
+				return (x) -> Math.tanh(y);
+			} 
 		} 
 		
 		// If a is a function token, apply it to 'x' and use that as the argument.
 		else if (a instanceof FunctionToken) {
-			if (symbol.equals("sin")) {
-				return (x) -> Math.sin(((FunctionToken) a).getFunction().apply(x));
+			if (symbol.equals("abs")) {
+				return (x) -> Math.abs(((FunctionToken) a).getFunction().apply(x));
+			} else if (symbol.equals("acos")) {
+				return (x) -> Math.acos(((FunctionToken) a).getFunction().apply(x));
+			} else if (symbol.equals("asin")) {
+				return (x) -> Math.asin(((FunctionToken) a).getFunction().apply(x));
+			} else if (symbol.equals("atan")) { 
+				return (x) -> Math.atan(((FunctionToken) a).getFunction().apply(x));
+			} else if (symbol.equals("cbrt")) {
+				return (x) -> Math.cbrt(((FunctionToken) a).getFunction().apply(x));
+			} else if (symbol.equals("ceil")) {
+				return (x) -> Math.ceil(((FunctionToken) a).getFunction().apply(x));
 			} else if (symbol.equals("cos")) {
 				return (x) -> Math.cos(((FunctionToken) a).getFunction().apply(x));
+			} else if (symbol.equals("cosh")) {
+				return (x) -> Math.cosh(((FunctionToken) a).getFunction().apply(x));
+			} else if (symbol.equals("exp")) {
+				return (x) -> Math.exp(((FunctionToken) a).getFunction().apply(x));
+			} else if (symbol.equals("floor")) {
+				return (x) -> Math.floor(((FunctionToken) a).getFunction().apply(x));
+			} else if (symbol.equals("log")) {
+				return (x) -> Math.log10(((FunctionToken) a).getFunction().apply(x));
+			} else if (symbol.equals("ln")) {
+				return (x) -> Math.log(((FunctionToken) a).getFunction().apply(x));
+			} else if (symbol.equals("round")) {
+				return (x) -> (double) Math.round(((FunctionToken) a).getFunction().apply(x));
+			} else if (symbol.equals("sin")) {
+				return (x) -> Math.sin(((FunctionToken) a).getFunction().apply(x));
+			} else if (symbol.equals("sinh")) {
+				return (x) -> Math.sinh(((FunctionToken) a).getFunction().apply(x));
+			} else if (symbol.equals("sqrt")) {
+				return (x) -> Math.sqrt(((FunctionToken) a).getFunction().apply(x));
 			} else if (symbol.equals("tan")) {
 				return (x) -> Math.tan(((FunctionToken) a).getFunction().apply(x));
-			}
+			}else if (symbol.equals("tanh")) {
+				return (x) -> Math.tanh(((FunctionToken) a).getFunction().apply(x));
+			} 
 		}
 		
 		// If the tokens are invalid, return null.
