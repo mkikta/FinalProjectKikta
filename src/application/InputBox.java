@@ -31,8 +31,10 @@ import javafx.util.Duration;
  */
 public class InputBox extends VBox {
 	
-	private GraphArea ga;	// The graph area that this belongs to.
-	private int rows;		// The number of rows in this.
+	private GraphArea ga;		// The graph area that this belongs to.
+	private int rows;			// The number of rows in this.
+	private static Text txt;	// The text that the info box will display when clicked.	
+	private static InfoBox ib;	// Displays information on how to use calculator.
 	
 	/**
 	 * Set the fields and create the initial row.
@@ -52,6 +54,18 @@ public class InputBox extends VBox {
 		ButtonBox bb = new ButtonBox();
 		getChildren().add(bb);
 		rows = 1;
+		
+		// Create and add the infobox and the text.
+		ib = new InfoBox(this);
+		getChildren().add(ib);
+		txt = new Text();
+		txt.setText("	Write your function as an expression of x. Type spaces between all \r\n" + 
+				"	characters and symbols. Currently supported functions include: \r\n" + 
+				"	\"abs\", \"acos\", \"asin\", \"atan\", \"cbrt\", \"ceil\", \"cos\", \"cosh\", \"exp\", \"floor\", \r\n" + 
+				"	\"log\", \"ln\", \"max\", \"min\", \"round\", \"sin\", \"sinh\", \"sqrt\",\"tan\", \"tanh\"\r\n" + 
+				"	Single-argument functions should be entered in the form \"sin ( x ).\"\r\n" + 
+				"	Two-argument functions should be entered \"max ( x , 2 ).\"");
+		txt.setStroke(Color.WHITE);
 	}
 	
 	/**
@@ -69,10 +83,29 @@ public class InputBox extends VBox {
 	 * @param bb The given row.
 	 */
 	public void addRow (ButtonBox bb) {
-		if (!((ButtonBox) getChildren().get(getChildren().size() - 1)).getTextField().getCharacters().toString().equals("")) {
+		if (!((ButtonBox) getChildren().get(getChildren().size() - 2)).getTextField().getCharacters().toString().equals("")) {
 			int index = getChildren().indexOf(bb);
 			getChildren().add(index + 1, new ButtonBox());
 			rows++;
+		}
+	}
+	
+	/**
+	 * Change whether or not the information on usage is displayed.
+	 * @param isDisplayed
+	 */
+	public void displayInfo(boolean isDisplayed) {
+		
+		// If isDisplayed is true and the info is not displayed, display it and change the button opacity.
+		if (isDisplayed && !getChildren().contains(txt)) {
+			getChildren().add(txt);
+			ib.setOpacity(1);
+		} 
+		
+		// If isDisplayed is false and the info is displayed, remove it and change the button opacity.
+		else if (!isDisplayed && getChildren().contains(txt)){
+			getChildren().remove(txt);
+			ib.setOpacity(0.7);
 		}
 	}
 	

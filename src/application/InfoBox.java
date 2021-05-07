@@ -1,27 +1,58 @@
 package application;
 
+import javafx.event.EventHandler;
 import javafx.scene.control.Button;
+import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 
 /**
- * This class will be a button that displays info on how to use the graphing
- * calculator when clicked on. I was too busy to implement this this week.
+ * This class is a button that displays info on how to use the graphing
+ * calculator when clicked on.
  * @author Mark Kikta
  * @version 0.1
  */
 public class InfoBox extends Button {
-	ImageView qm = new ImageView("application/qm.png");
+	private ImageView qm;	// The image of the button
 	
-	public InfoBox () {
-		setGraphic(qm);
-	}
-	
-	/*
-	 * Text that will be displayed:
-	 * Write your function as an expression of x. Type spaces between all 
-	 * characters and symbols. Currently Supported functions include: 
-	 * "abs", "acos", "asin", "atan", "cbrt", "ceil", "cos", "cosh", "exp", "floor", "log", "ln", "max", "min", "round", "sin", "sinh", "sqrt","tan", "tanh"
-	 * Single-argument functions should be entered in the form "sin ( x )."
-	 * Two-argument functions should be entered "max ( x , 2 )."
+	/**
+	 * Create an info box belonging to the given input box.
+	 * @param ib The given input box.
 	 */
+	public InfoBox (InputBox ib) {
+		
+		// Create and format the graphic for the button.
+		qm = new ImageView("application/qm.png");;
+		ColorAdjust white = new ColorAdjust();
+		white.setBrightness(1.0);
+		qm.setFitHeight(30);
+		qm.setPreserveRatio(true);
+		qm.setEffect(white);
+		qm.setOpacity(0.7);
+		setGraphic(qm);
+		
+		// When the mouse is pressed, display the info.
+		setOnMousePressed (new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent e) {
+				ib.displayInfo(true);
+			}
+		});
+		
+		// When the mouse leaves the button, remove the info.
+		setOnMouseExited (new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent e) {
+				ib.displayInfo(false);
+			}
+		});
+		
+		// When the mouse leaves the button, remove the info.
+		setOnMouseReleased (new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent e) {
+				ib.displayInfo(false);
+			}
+		});
+	}
 }
