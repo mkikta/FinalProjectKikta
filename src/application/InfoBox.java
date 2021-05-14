@@ -35,11 +35,11 @@ public class InfoBox extends Button {
 		setOnMousePressed (new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent e) {
-				ib.displayInfo(true);
+				ib.displayInfo();
 			}
 		});
 		
-		// When the mouse leaves the button, remove the info.
+		/*// When the mouse leaves the button, remove the info.
 		setOnMouseExited (new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent e) {
@@ -53,6 +53,6 @@ public class InfoBox extends Button {
 			public void handle(MouseEvent e) {
 				ib.displayInfo(false);
 			}
-		});
+		});*/
 	}
 }

@@ -83,7 +83,17 @@ public class InputBox extends VBox {
 	 * @param bb The given row.
 	 */
 	public void addRow (ButtonBox bb) {
-		if (!((ButtonBox) getChildren().get(getChildren().size() - 2)).getTextField().getCharacters().toString().equals("")) {
+		
+		// Determine the number of children in this input box before the first text field.
+		int mod;
+		if (!getChildren().contains(txt)) {
+			mod = 2;
+		} else {
+			mod = 3;
+		}
+		
+		// Add a new row after this one.
+		if (!((ButtonBox) getChildren().get(getChildren().size() - mod)).getTextField().getCharacters().toString().equals("")) {
 			int index = getChildren().indexOf(bb);
 			getChildren().add(index + 1, new ButtonBox());
 			rows++;
@@ -92,18 +102,14 @@ public class InputBox extends VBox {
 	
 	/**
 	 * Change whether or not the information on usage is displayed.
-	 * @param isDisplayed
 	 */
-	public void displayInfo(boolean isDisplayed) {
+	public void displayInfo() {
 		
-		// If isDisplayed is true and the info is not displayed, display it and change the button opacity.
-		if (isDisplayed && !getChildren().contains(txt)) {
+		// If the info is not displayed, display it. If it is displayed, remove it.
+		if (!getChildren().contains(txt)) {
 			getChildren().add(txt);
 			ib.setOpacity(1);
-		} 
-		
-		// If isDisplayed is false and the info is displayed, remove it and change the button opacity.
-		else if (!isDisplayed && getChildren().contains(txt)){
+		} else {
 			getChildren().remove(txt);
 			ib.setOpacity(0.7);
 		}
