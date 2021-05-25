@@ -10,12 +10,12 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 
 /**
- * This class represents a pane on which the graphs of functions may be drawn. It has fields for
- * maximum and minimum x and y values, x- and y-axes, lists of subdividing x and y lines, x- and
- * y-translation factors, and x- and y-scale factors. It has methods for adding and removing graphs,
- * updating, zooming, and panning.
+ * This class extends Pane from JavaFX. It represents a pane on which the graphs of functions may 
+ * be drawn. It has fields for the last of graphs on it, its input box, its x and y bounds, its x
+ * and y increments, its x and y axes, and for the effects of zooming and panning on it. It has 
+ * methods for adding and removing graphs, updating as the user interacts, zooming, and panning.
  * @author Mark Kikta
- * @version 0.4
+ * @version 1.0
  */
 public class GraphArea extends Pane {
 	private double xMin, xMax;					// The minimum and maximum x values to display.
@@ -45,8 +45,10 @@ public class GraphArea extends Pane {
 	 * @param height The height of this GraphArea.
 	 * @param xMin The minimum x value.
 	 * @param xMax The maximum x value.
+	 * @param xIncrement How much distance between tick marks on the x-axis.
 	 * @param yMin The minimum y value.
 	 * @param yMax The maximum y value.
+	 * @param yIncrment How much distance between tick marks on the y-axis.
 	 */
 	public GraphArea (int width, int height, double xMin, double xMax, double xIncrement, double yMin, double yMax, double yIncrement) {
 		
@@ -57,8 +59,10 @@ public class GraphArea extends Pane {
 		this.yMax = yMax;
 		this.xIncrement = xIncrement;
 		this.yIncrement = yIncrement;
-		ib = new InputBox(height, width, this);
 		graphs = new ArrayList<Graph>();
+		
+		// Create a new input box belonging to this graph area.
+		ib = new InputBox(height, width, this);
 		
 		// Set the width and height.
 		setWidth(width);
@@ -77,7 +81,7 @@ public class GraphArea extends Pane {
 		yAxis.setSide(Side.RIGHT);
 		yAxis.setMinorTickVisible(false);
 		
-		// Update the Graph Area. This method contains most of the code that used to be in the constructor.
+		// Update this graph area.
 		update();
 		
 		// Add a new class representing this one to the CSS file.
@@ -105,7 +109,7 @@ public class GraphArea extends Pane {
 			yIncrement = (yMax - yMin) / 10;
 		}
 		
-		// Set the preferred width and height.
+		// Set the width and height.
 		setPrefWidth(width);
 		setPrefHeight(height);
 		
@@ -121,9 +125,9 @@ public class GraphArea extends Pane {
 		 * equal to the height of the GraphArea times the absolute value of the displayed length of
 		 * the y-axis on the top side of the origin divided by the total displayed length of the y-axis.
 		 */
-		// The offsets due to zooming and panning are also factored in now.
+		// The offsets due to zooming and panning are also considered.
 		xTranslation = width * (Math.abs(xMin)  + xZoom  + xTempPan + xPermaPan) / (xMax - xMin);
-		yTranslation = height * (Math.abs(yMax)  + yZoom + yTempPan + yPermaPan) / (yMax - yMin) ;
+		yTranslation = height * (Math.abs(yMax) + yZoom + yTempPan + yPermaPan) / (yMax - yMin) ;
 		
 		/*
 		 * Set the bounds to new values, set the tick Unit, set the width equal to the width of this 
@@ -148,11 +152,9 @@ public class GraphArea extends Pane {
 		// Draw subdividing lines across the GraphArea, first in the x direction.
 		for (double i = 0; i < 2 * xMax; i += xIncrement / 2) {
 					
-			// Account for the scale factor and set the stroke width.
+			// Account for the scale factor and set the stroke width and color.
 			l = new Line(i * xScale, 0, i * xScale, height);
 			l.setStrokeWidth(0.2);
-					
-			// I could not figure out how to color this with CSS.
 			l.setStroke(Color.GREY);
 					
 			// Add this line to the list of lines and to the list of child nodes.
@@ -170,14 +172,18 @@ public class GraphArea extends Pane {
 		// Add the axes and input box to the GraphArea.
 		getChildren().addAll(xAxis, yAxis);
 		
+		// Add all the graphs to this graph area, then draw them.
 		for (Graph g : graphs) {
 			getChildren().add(g);
+			
 			try {
 				g.draw();
 			} catch (Exception e) {
 				// InputBox will display error message.
 			}
 		}
+		
+		// Add the input box to this graph area.
 		getChildren().addAll(ib);
 	}
 	
@@ -244,7 +250,8 @@ public class GraphArea extends Pane {
 	}
 
 	/**
-	 * When a pan ends, add the temporary pan to the permanent pan values.
+	 * When a pan ends, add the temporary pan to the permanent pan values and reset the
+	 * temporary pan values.
 	 */
 	public void endPan() {
 		xPermaPan += xTempPan;
@@ -254,7 +261,7 @@ public class GraphArea extends Pane {
 	}
 	
 	/**
-	 * Add a graph to this GraphArea.
+	 * Add a graph to this GraphArea and update.
 	 * @param g The graph to be added.
 	 */
 	public void addGraph (Graph g) {
@@ -263,7 +270,7 @@ public class GraphArea extends Pane {
 	}
 	
 	/**
-	 * Remove a given graph from this GraphArea.
+	 * Remove a given graph from this GraphArea and update.
 	 * @param g The graph to be removed.
 	 */
 	public void removeGraph (Graph g) {

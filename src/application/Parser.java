@@ -11,7 +11,7 @@ import java.util.function.Function;
  * using Dijkstra's Shunting-Yard Algorithm. It has a helper method that converts this post-fix
  * expression into a function.
  * @author Mark Kikta
- * @version 0.4
+ * @version 1.0
  */
 public class Parser {
 	
@@ -47,16 +47,17 @@ public class Parser {
 		while (st.hasMoreTokens()) {
 			token = new Token(st.nextToken());
 
+			// If the token is not one of the supported types, return a null function.
 			if (token.getType() == TokenType.NULL) {
 				return null;
 			}
 			
-			// If the token is a number (or an x) add push it to the output queue.
+			// If the token is a number (or an x) push it to the output queue.
 			if (token.getType() == TokenType.CONSTANT || token.getType() == TokenType.VARIABLE) {
 				queue.add(token);
 			} 
 			
-			// If the token is a a function, push it to the operator stack.
+			// If the token is a function, push it to the operator stack.
 			else if (token.getType() == TokenType.FUNCTION) {
 				stack.push(token);
 			} 
@@ -77,7 +78,7 @@ public class Parser {
 				stack.push(token);
 			} 
 			
-			// If the token is a left parentheses, push it to the operator stack.
+			// If the token is a left parenthesis, push it to the operator stack.
 			else if (token.getSymbol().equals("(")) {
 				stack.push(token);
 			} 
@@ -120,6 +121,7 @@ public class Parser {
 	 */
 	private static Function<Double, Double> evaluatePostfix (Queue<Token> queue) {
 		
+		// This will be used for determining what to return.
 		int length = queue.size();
 		
 		// Stack to hold the tokens as conversion takes place.
@@ -136,6 +138,8 @@ public class Parser {
 			
 			// If the token is an operator, operate on the top two tokens of the stack.
 			else if (t.getType() == TokenType.OPERATOR) {
+				
+				// If it is a negative symbol, use a 0 as the first argument.
 				if (stack.size() == 1 && t.getSymbol().equals("-")) {
 					stack.push(new FunctionToken(t.operate(stack.pop(), new Token("0"))));
 				} else {

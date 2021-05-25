@@ -9,9 +9,10 @@ import javafx.scene.input.ScrollEvent;
 
 /**
  * This program displays a graph area and an input box for users to enter a function
- * to be graphed. The graph area is able to be smoothly zoomed and scrolled on.
+ * to be graphed. The graph area is able to be smoothly zoomed and scrolled on. It has
+ * fields for the coordinates of where a pan starts.
  * @author Mark Kikta
- * @version 0.7
+ * @version 1.0
  */
 public class Runner extends Application {
 	
@@ -35,11 +36,11 @@ public class Runner extends Application {
 			Scene scene = new Scene(ga);
 			
 			
-			// Update the graphArea, re-add the graph, and redraw it when the scene is resized.
+			// Update the graphArea.
 			scene.heightProperty().addListener(event -> {ga.update();});
 		    scene.widthProperty().addListener(event -> {ga.update();});
 		    
-		    // Create an event handler for zooming
+		    // Create and add an event handler for zooming to the scene.
 		    EventHandler<ScrollEvent> zoomer = new EventHandler<ScrollEvent>() {
 		    	@Override
 		    	// When the user scrolls, call the Graph Area's zoom method, then update it.
@@ -65,9 +66,11 @@ public class Runner extends Application {
 		    		yPanStart = -e.getY() / ga.getHeight() * (ga.getYMax() - ga.getYMin()) + Math.abs(ga.getYMin());
 		    	}
 		    };
+		    
+		    // Add this event handler to the scene.
 		    scene.addEventFilter(MouseEvent.MOUSE_PRESSED, panStart);
 		   
-		    // This event caller is called at the end of a pan.
+		    // This event handler is called at the end of a pan.
 		    EventHandler<MouseEvent> panEnd = new EventHandler<MouseEvent>() {
 		    	@Override
 		    	// Call the Graph Area's pan ending method.
@@ -75,6 +78,8 @@ public class Runner extends Application {
 		    		ga.endPan();
 		    	}
 		    };
+		    
+		    // Add this event handler to the scene.
 		    scene.addEventFilter(MouseEvent.MOUSE_RELEASED, panEnd);
 		    
 		    // This event handler is called while the user is panning.
@@ -86,10 +91,12 @@ public class Runner extends Application {
 		    		ga.update();
 		    	}
 		    };
+		    
+		    // Add this event handler to the scene.
 		    scene.addEventFilter(MouseEvent.MOUSE_DRAGGED, panner);
 			
 		    
-		    // Attach the CSS file, add the scene to the stage, format the stage, and finally show the stage.
+		    // Attach the CSS file, title the window, add the scene to the stage, format the stage, and finally show the stage.
 	    	scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 	 	    stage.setTitle("Graphing Calculator--Mark Kikta");
 	 	    stage.setScene(scene);
@@ -100,7 +107,7 @@ public class Runner extends Application {
 	};
 	
 	/**
-	 * Launch the application.
+	 * JavaFX boilerplate. Launch the application.
 	 * @param args
 	 */
 	public static void main(String[] args) {

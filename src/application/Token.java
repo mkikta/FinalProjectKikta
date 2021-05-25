@@ -7,9 +7,9 @@ import java.util.function.Function;
 /**
  * This class represents a token to be used in the parser. It has fields for the string the token represents,
  * the type of token it is, its associativity, and its precedence. It has methods for applying functions and 
- * operators.
+ * operators. It has arrays of supported functions and operators.
  * @author Mark Kikta
- * @version 0.4
+ * @version 1.0
  */
 public class Token {
 	private String symbol;										// The string that this token represents.
@@ -17,7 +17,8 @@ public class Token {
 	private int precedence;										// The precedence of this token, -1 if not operator.
 	private boolean associativity;								// The associativity of this token, -1 if not operator.
 	private static final List<String> FUNCTIONS = 
-			Arrays.asList("abs", "acos", "asin", "atan", "cbrt", "ceil", "cos", "cosh", "exp", "floor", "log", "ln", "max", "min", "round", "sin", "sinh", "sqrt","tan", "tanh");	// Currently supported functions.
+			Arrays.asList("abs", "acos", "asin", "atan", "cbrt", "ceil", "cos", "cosh", "exp", "floor", "log", "ln", 
+					"max", "min", "round", "sin", "sinh", "sqrt","tan", "tanh");	// Currently supported functions.
 	private static final List<String> OPERATORS = 
 			Arrays.asList("+", "-", "*", "/", "^");				// Currently supported operators.
 	
@@ -27,9 +28,11 @@ public class Token {
 	 * @param symbol The given symbol.
 	 */
 	public Token (String symbol) {
+		
+		// Set this token's symbol to the given one.
 		this.symbol = symbol;
 		
-		// Set this token's type.
+		// Set this token's type corresponding to its symbol.
 		if (isNumeric()) {
 			type = TokenType.CONSTANT;
 		} else if (symbol.equals("x")) {
@@ -63,7 +66,10 @@ public class Token {
 				precedence = 3;
 				associativity = false;
 			}
-		} else if (FUNCTIONS.contains(symbol)) {
+		}
+		
+		// If it is a supported function, set its token type as function.
+		else if (FUNCTIONS.contains(symbol)) {
 			type = TokenType.FUNCTION;
 		} 
 		
@@ -78,7 +84,10 @@ public class Token {
 	 */
 	private boolean isNumeric () {
 		
-		// If it is e or pi, change its symbol.
+		/*
+		 * If it is e or pi, change its symbol to the double representation of the
+		 * corresponding constant.
+		 */
 		if (symbol.equals("e")) {
 			symbol = ((Double)Math.E).toString();
 			return true;
@@ -93,6 +102,8 @@ public class Token {
 		} catch (Exception e) {
 			return false;
 		}
+		
+		// If it can be parsed as a double, than it is numeric.
 		return true;
 	}
 	
@@ -150,7 +161,7 @@ public class Token {
 	 * a and b are reversed to reflect the first-in last-out nature of stacks.
 	 * @param b The second argument.
 	 * @param a The first argument
-	 * @return The new function. null if not valid.
+	 * @return The new function. null if invalid.
 	 */
 	public Function<Double, Double> operate (Token b, Token a) {
 		
@@ -316,7 +327,7 @@ public class Token {
 	 * Apply the function corresponding to this token's symbol to the given token.
 	 * This method is for functions that take one argument.
 	 * @param a The argument token.
-	 * @return The new function. null if not valid.
+	 * @return The new function. null if invalid.
 	 */
 	public Function<Double, Double> applySingleArg (Token a) {
 		
@@ -454,14 +465,14 @@ public class Token {
 	 * a and b are reversed to reflect the first-in last-out nature of stacks.
 	 * @param b The second argument.
 	 * @param a The first argument.
-	 * @return
+	 * @return The new function. null if invalid.
 	 */
 	public Function<Double, Double> applyTwoArgs (Token b, Token a) {
 		
 		// Variable to hold the value of a if it is a constant.
 		double y;
 		
-		// Essentially repeat the logic from the operate function, just using different functions.
+		// Essentially repeat the logic from the operate method, just using different functions.
 		if (a.getType() == TokenType.VARIABLE) {
 			if (b.getType() == TokenType.VARIABLE) {
 				if (symbol.equals("max")) {

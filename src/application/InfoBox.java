@@ -7,10 +7,10 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 
 /**
- * This class is a button that displays info on how to use the graphing
+ * This class represents a button that displays info on how to use the graphing
  * calculator when clicked on.
  * @author Mark Kikta
- * @version 0.1
+ * @version 1.0
  */
 public class InfoBox extends Button {
 	private ImageView qm;	// The image of the button
@@ -22,7 +22,7 @@ public class InfoBox extends Button {
 	public InfoBox (InputBox ib) {
 		
 		// Create and format the graphic for the button.
-		qm = new ImageView("application/qm.png");;
+		qm = new ImageView("application/qm.png");
 		ColorAdjust white = new ColorAdjust();
 		white.setBrightness(1.0);
 		qm.setFitHeight(30);

@@ -23,11 +23,12 @@ import javafx.util.Duration;
 
 /**
  * This class represents a place for the user to input functions that they want 
- * graphed. It has fields for the graph area it belongs to and for the number of
- * rows that it contains. It has a private class ButtonBox that is used for each
- * input row. It has methods for removing rows and adding rows.
+ * graphed. It has fields for the graph area it belongs to, the number of rows
+ * that it contains, informational text, and an info box. It has a private class
+ * ButtonBox that is used for each input row. It has methods for removing rows, 
+ * adding rows, and displaying info.
  * @author Mark Kikta
- * @version 0.3
+ * @version 1.0
  */
 public class InputBox extends VBox {
 	
@@ -37,7 +38,7 @@ public class InputBox extends VBox {
 	private static InfoBox ib;	// Displays information on how to use calculator.
 	
 	/**
-	 * Set the fields and create the initial row.
+	 * Set the fields, write the informational text, and create the initial row.
 	 * @param width Width of this InputBox.
 	 * @param height Height of this InputBox.
 	 * @param ga The graph area that this belongs to.
@@ -55,16 +56,17 @@ public class InputBox extends VBox {
 		getChildren().add(bb);
 		rows = 1;
 		
-		// Create and add the infobox and the text.
+		// Create and add the infobox and its text.
 		ib = new InfoBox(this);
 		getChildren().add(ib);
 		txt = new Text();
 		txt.setText("	Write your function as an expression of x. Type spaces between all \r\n" + 
-				"	characters and symbols. Currently supported functions include: \r\n" + 
+				"	characters and symbols. Supported functions include: \r\n" + 
 				"	\"abs\", \"acos\", \"asin\", \"atan\", \"cbrt\", \"ceil\", \"cos\", \"cosh\", \"exp\", \"floor\", \r\n" + 
-				"	\"log\", \"ln\", \"max\", \"min\", \"round\", \"sin\", \"sinh\", \"sqrt\",\"tan\", \"tanh\"\r\n" + 
-				"	Single-argument functions should be entered in the form \"sin ( x ).\"\r\n" + 
-				"	Two-argument functions should be entered \"max ( x , 2 ).\"");
+				"	\"log\", \"ln\", \"max\", \"min\", \"round\", \"sin\", \"sinh\", \"sqrt\",\"tan\", \"tanh\".\r\n" + 
+				"	Single-argument functions should be entered in the form \"sin ( x )\".\r\n" + 
+				"	Two-argument functions should be entered \"max ( x , 2 )\", again \r\n" +
+				"	making sure to put spaces between each character and symbol.");
 		txt.setStroke(Color.WHITE);
 	}
 	
@@ -101,7 +103,7 @@ public class InputBox extends VBox {
 	}
 	
 	/**
-	 * Change whether or not the information on usage is displayed.
+	 * Change whether or not the informational text is displayed.
 	 */
 	public void displayInfo() {
 		
@@ -116,12 +118,13 @@ public class InputBox extends VBox {
 	}
 	
 	/**
-	 * This private class represents a textfield for entering functions and a button for
-	 * deleting/clearing its corresponding textfield. It has fields for its textfield, button,
-	 * and the graph currently associated with it. It has methods to add a new row after itself,
-	 * remove itself from an input box, and to graph its contents as a function.
+	 * This private class extends HBox from JavaFX. It has a textfield for entering functions
+	 * and a button for deleting/clearing its corresponding textfield. It has fields for its 
+	 * textfield, button, and the graph currently associated with it. It has methods to add a 
+	 * new row after itself, remove itself from an input box, and to graph its contents as a
+	 * function.
 	 * @author Mark Kikta
-	 * @version 0.1
+	 * @version 1.0
 	 */
 	private class ButtonBox extends HBox {
 		private TextField tf;	// The textfield for entering functions.
@@ -133,6 +136,8 @@ public class InputBox extends VBox {
 		 * to this.
 		 */
 		private ButtonBox () {
+			
+			// Formatting.
 			setSpacing(0);
 			
 			// Create a new button and replace it with an x.
@@ -150,21 +155,26 @@ public class InputBox extends VBox {
 				@Override
 				public void handle(MouseEvent e) {
 					x.setEffect(grey);
+					
+					// Makes the transition quicker.
 					x.setCache(true);
 					x.setCacheHint(CacheHint.SPEED);
 				}
 			});
 			
 			/*
-			 * When the user releases the button, it turns white clears the textfield,
+			 * When the user releases the button, it turns white, clears the textfield,
 			 * removes the current graph, and removes this row.
 			 */
 			b.setOnMouseReleased(new EventHandler<MouseEvent>() {
 				@Override
 				public void handle(MouseEvent e) {
 					x.setEffect(white);
+					
+					// Makes the transition quicker.
 					x.setCache(true);
 					x.setCacheHint(CacheHint.SPEED);
+					
 					tf.clear();
 					ga.removeGraph(g);
 					removeThisRow();
@@ -186,7 +196,7 @@ public class InputBox extends VBox {
 				}
 			});
 			
-			// Add these nodes to this button box, and create a style class.
+			// Add these nodes to this button box, and create a style class for it.
 			getChildren().add(tf);
 			getChildren().add(b);
 			getStyleClass().add("button-box");
@@ -200,7 +210,7 @@ public class InputBox extends VBox {
 			// Remove the current graph.
 			ga.removeGraph(g);
 			
-			// Parse the contents of the textfield, then graph it.
+			// Parse the contents of the textfield, then add the graph to the graph area and draw it.
 			try {
 				Function<Double, Double> f = Parser.parse(tf.getCharacters().toString());
 				g = new Graph(f, ga, new Color(Math.random(), Math.random(), Math.random(), 1));
@@ -259,6 +269,9 @@ public class InputBox extends VBox {
 			}
 		}
 		
+		/**
+		 * @return tf
+		 */
 		public TextField getTextField () {
 			return tf;
 		}
